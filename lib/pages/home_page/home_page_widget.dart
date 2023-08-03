@@ -187,20 +187,28 @@ class _HomePageWidgetState extends State<HomePageWidget> {
                   ),
                 ),
                 Container(
-                  height: screenSize.height / 3,
-                  width: screenSize.width,
-                  child: ListView.builder(
-                    itemCount: _model.csvData.length,
-                    itemBuilder: (context, index) {
-                      if (_model.csvData[index].isEmpty)
-                        return Text("tidak ada data csv");
-                      return ListTile(
-                        title: Text('Row ${index + 1}'),
-                        subtitle: Text(_model.csvData[index].toString()),
-                      );
-                    },
-                  ),
-                ),
+                    height: screenSize.height / 3,
+                    width: screenSize.width,
+                    child: SingleChildScrollView(
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: _model.csvData.isEmpty
+                            ? const CircularProgressIndicator()
+                            : DataTable(
+                                columns: _model.csvData[0]
+                                    .map((item) => DataColumn(
+                                        label: Text(item.toString())))
+                                    .toList(),
+                                rows: _model.csvData
+                                    .sublist(1, _model.csvData.length)
+                                    .map((row) => DataRow(
+                                        cells: row
+                                            .map((rowItem) => DataCell(
+                                                Text(rowItem.toString())))
+                                            .toList()))
+                                    .toList()),
+                      ),
+                    )),
               ],
             ),
           ),

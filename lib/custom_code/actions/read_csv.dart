@@ -13,7 +13,7 @@ Future<List<List<dynamic>>> loadCsvFile(String localFile) async {
     String csvData = await File(filePath).readAsString();
 
     // Convert CSV data to a List of Lists
-    var csvTable = CsvToListConverter().convert(csvData);
+    var csvTable = CsvToListConverter().convert(csvData, eol: "\n");
 
     return csvTable;
   } catch (e) {
