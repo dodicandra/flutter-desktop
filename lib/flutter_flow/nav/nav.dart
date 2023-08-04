@@ -1,21 +1,22 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'package:page_transition/page_transition.dart';
+import 'package:wings/pages/make_csv_page/make_csv_page_widget.dart';
 
 import '/index.dart';
-import '/main.dart';
-import '/flutter_flow/flutter_flow_theme.dart';
-import '/flutter_flow/lat_lng.dart';
-import '/flutter_flow/place.dart';
 import '/flutter_flow/flutter_flow_util.dart';
-import 'serialization_util.dart';
 
 export 'package:go_router/go_router.dart';
 export 'serialization_util.dart';
 
 const kTransitionInfoKey = '__transition_info__';
+
+class _AppRoutes {
+  String home = "/home";
+  String makeCsv = "/make-csv";
+}
+
+final _appRoute = _AppRoutes();
 
 class AppStateNotifier extends ChangeNotifier {
   AppStateNotifier._();
@@ -44,9 +45,13 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
         ),
         FFRoute(
           name: 'HomePage',
-          path: '/homePage',
+          path: _appRoute.home,
           builder: (context, params) => HomePageWidget(),
-        )
+        ),
+        FFRoute(
+            name: "MakeCsv",
+            path: _appRoute.makeCsv,
+            builder: (ctx, params) => MakeCsvPage())
       ].map((r) => r.toRoute(appStateNotifier)).toList(),
     );
 
@@ -59,6 +64,7 @@ extension NavParamExtensions on Map<String, String?> {
 }
 
 extension NavigationExtensions on BuildContext {
+  _AppRoutes get routes => _appRoute;
   void safePop() {
     // If there is only one route on the stack, navigate to the initial
     // page instead of popping.

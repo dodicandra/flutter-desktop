@@ -136,26 +136,8 @@ class _HomePageWidgetState extends State<HomePageWidget> {
                 Padding(
                   padding: EdgeInsetsDirectional.fromSTEB(0.0, 10.0, 0.0, 0.0),
                   child: FFButtonWidget(
-                    onPressed: () async {
-                      setState(() {
-                        _model.text = 'Oke';
-                      });
-                      await showDialog(
-                        context: context,
-                        builder: (alertDialogContext) {
-                          return AlertDialog(
-                            title: Text('Berhasil'),
-                            content: Text('Berhasi Update State'),
-                            actions: [
-                              TextButton(
-                                onPressed: () =>
-                                    Navigator.pop(alertDialogContext),
-                                child: Text('Ok'),
-                              ),
-                            ],
-                          );
-                        },
-                      );
+                    onPressed: () {
+                      context.go(context.routes.makeCsv);
                     },
                     text: 'Set State',
                     options: FFButtonOptions(
