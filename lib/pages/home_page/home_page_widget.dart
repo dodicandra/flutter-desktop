@@ -9,6 +9,9 @@ import 'home_page_model.dart';
 import 'package:csv/csv.dart';
 
 export 'home_page_model.dart';
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
+import 'package:printing/printing.dart';
 
 class HomePageWidget extends StatefulWidget {
   const HomePageWidget({Key? key}) : super(key: key);
@@ -35,9 +38,51 @@ class _HomePageWidgetState extends State<HomePageWidget> {
     super.dispose();
   }
 
+  Future<void> printDoc() async {
+    final doc = pw.Document();
+    doc.addPage(pw.Page(
+        pageFormat: PdfPageFormat.a4,
+        build: (pw.Context ctx) {
+          return pw.TableHelper.fromTextArray(
+              data: _model.csvData
+                  .map((sublist) => sublist.map((e) => e.toString()).toList())
+                  .toList());
+        }));
+    await Printing.layoutPdf(onLayout: (format) async => doc.save());
+  }
+
   @override
   Widget build(BuildContext context) {
     Size screenSize = MediaQuery.of(context).size;
+    var buttonPrint = Padding(
+      padding: EdgeInsetsDirectional.fromSTEB(0.0, 10.0, 0.0, 0.0),
+      child: FFButtonWidget(
+        onPressed: () async {
+          try {
+            await printDoc();
+          } catch (e) {
+            print(e);
+          }
+        },
+        text: 'Print CSV',
+        options: FFButtonOptions(
+          height: 40.0,
+          padding: EdgeInsetsDirectional.fromSTEB(24.0, 0.0, 24.0, 0.0),
+          iconPadding: EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 0.0),
+          color: FlutterFlowTheme.of(context).primary,
+          textStyle: FlutterFlowTheme.of(context).titleSmall.override(
+                fontFamily: 'Readex Pro',
+                color: Colors.white,
+              ),
+          elevation: 3.0,
+          borderSide: BorderSide(
+            color: Colors.transparent,
+            width: 1.0,
+          ),
+          borderRadius: BorderRadius.circular(8.0),
+        ),
+      ),
+    );
     return GestureDetector(
       onTap: () => FocusScope.of(context).requestFocus(_model.unfocusNode),
       child: Scaffold(
@@ -161,6 +206,7 @@ class _HomePageWidgetState extends State<HomePageWidget> {
                     ),
                   ),
                 ),
+                if (_model.csvData.length > 0) buttonPrint,
                 Padding(
                   padding: EdgeInsetsDirectional.fromSTEB(0.0, 20.0, 0.0, 0.0),
                   child: Text(
