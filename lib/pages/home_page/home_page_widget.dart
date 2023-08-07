@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
+import 'package:printing/printing.dart';
 import 'package:wings/custom_code/actions/read_csv.dart';
 
 import '/custom_code/actions/index.dart' as actions;
@@ -6,12 +9,8 @@ import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
 import 'home_page_model.dart';
-import 'package:csv/csv.dart';
 
 export 'home_page_model.dart';
-import 'package:pdf/pdf.dart';
-import 'package:pdf/widgets.dart' as pw;
-import 'package:printing/printing.dart';
 
 class HomePageWidget extends StatefulWidget {
   const HomePageWidget({Key? key}) : super(key: key);
@@ -44,9 +43,8 @@ class _HomePageWidgetState extends State<HomePageWidget> {
         pageFormat: PdfPageFormat.a4,
         build: (pw.Context ctx) {
           return pw.TableHelper.fromTextArray(
-              data: _model.csvData
-                  .map((sublist) => sublist.map((e) => e.toString()).toList())
-                  .toList());
+            data: _model.csvData.map((sublist) => sublist.map((e) => e.toString()).toList()).toList(),
+          );
         }));
     await Printing.layoutPdf(onLayout: (format) async => doc.save());
   }
@@ -122,10 +120,14 @@ class _HomePageWidgetState extends State<HomePageWidget> {
                         var pt = await actions.pickFile();
                         _model.path = pt;
                         if (pt.split(".").last == "csv") {
-                          var data = await loadCsvFile(pt);
-                          setState(() {
-                            _model.csvData = data;
-                          });
+                          try {
+                            var data = await loadCsvFile(pt);
+                            setState(() {
+                              _model.csvData = data;
+                            });
+                          } catch (e) {
+                            print(e);
+                          }
                         }
                         setState(() {
                           _model.pdfPath = _model.path!;
@@ -139,8 +141,7 @@ class _HomePageWidgetState extends State<HomePageWidget> {
                               content: Text(e.toString()),
                               actions: [
                                 TextButton(
-                                  onPressed: () =>
-                                      Navigator.pop(alertDialogContext),
+                                  onPressed: () => Navigator.pop(alertDialogContext),
                                   child: Text('Ok'),
                                 ),
                               ],
@@ -152,16 +153,13 @@ class _HomePageWidgetState extends State<HomePageWidget> {
                     text: 'Chose File',
                     options: FFButtonOptions(
                       height: 40.0,
-                      padding:
-                          EdgeInsetsDirectional.fromSTEB(24.0, 0.0, 24.0, 0.0),
-                      iconPadding:
-                          EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 0.0),
+                      padding: EdgeInsetsDirectional.fromSTEB(24.0, 0.0, 24.0, 0.0),
+                      iconPadding: EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 0.0),
                       color: FlutterFlowTheme.of(context).primary,
-                      textStyle:
-                          FlutterFlowTheme.of(context).titleSmall.override(
-                                fontFamily: 'Readex Pro',
-                                color: Colors.white,
-                              ),
+                      textStyle: FlutterFlowTheme.of(context).titleSmall.override(
+                            fontFamily: 'Readex Pro',
+                            color: Colors.white,
+                          ),
                       elevation: 3.0,
                       borderSide: BorderSide(
                         color: Colors.transparent,
@@ -182,21 +180,18 @@ class _HomePageWidgetState extends State<HomePageWidget> {
                   padding: EdgeInsetsDirectional.fromSTEB(0.0, 10.0, 0.0, 0.0),
                   child: FFButtonWidget(
                     onPressed: () {
-                      context.go(context.routes.makeCsv);
+                      context.push(context.routes.makeCsv);
                     },
-                    text: 'Set State',
+                    text: 'Make CSV',
                     options: FFButtonOptions(
                       height: 40.0,
-                      padding:
-                          EdgeInsetsDirectional.fromSTEB(24.0, 0.0, 24.0, 0.0),
-                      iconPadding:
-                          EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 0.0),
+                      padding: EdgeInsetsDirectional.fromSTEB(24.0, 0.0, 24.0, 0.0),
+                      iconPadding: EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 0.0),
                       color: FlutterFlowTheme.of(context).primary,
-                      textStyle:
-                          FlutterFlowTheme.of(context).titleSmall.override(
-                                fontFamily: 'Readex Pro',
-                                color: Colors.white,
-                              ),
+                      textStyle: FlutterFlowTheme.of(context).titleSmall.override(
+                            fontFamily: 'Readex Pro',
+                            color: Colors.white,
+                          ),
                       elevation: 3.0,
                       borderSide: BorderSide(
                         color: Colors.transparent,
@@ -223,17 +218,12 @@ class _HomePageWidgetState extends State<HomePageWidget> {
                         child: _model.csvData.isEmpty
                             ? const CircularProgressIndicator()
                             : DataTable(
-                                columns: _model.csvData[0]
-                                    .map((item) => DataColumn(
-                                        label: Text(item.toString())))
-                                    .toList(),
+                                columns:
+                                    _model.csvData[0].map((item) => DataColumn(label: Text(item.toString()))).toList(),
                                 rows: _model.csvData
                                     .sublist(1, _model.csvData.length)
                                     .map((row) => DataRow(
-                                        cells: row
-                                            .map((rowItem) => DataCell(
-                                                Text(rowItem.toString())))
-                                            .toList()))
+                                        cells: row.map((rowItem) => DataCell(Text(rowItem.toString()))).toList()))
                                     .toList()),
                       ),
                     )),
